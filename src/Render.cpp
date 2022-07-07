@@ -10,9 +10,9 @@ void Render::startRender(sf::VertexArray* pixles){
 
     const glm::vec3 bottomLeft(
         c.m_origin -
-        glm::vec3(c.m_viewPortWidth/2,0,0) -
-        glm::vec3(0,c.m_viewPortHeight/2,0) -
-        glm::vec3(0,0,c.m_focalLength)
+        c.m_viewPortWidth*(0.5f) -
+        c.m_viewPortHeight*(0.5f) -
+        c.m_focalLength
     );
 
     for (int j = sceneHeight -1; j >= 0; --j) {
@@ -21,7 +21,7 @@ void Render::startRender(sf::VertexArray* pixles){
             float px = (float)i/sceneWidth; 
             float py = (float)j/sceneHeight; 
 
-            Ray ray(bottomLeft + c.m_xAxis*px + c.m_yAxis*py,c.m_origin);
+            Ray ray(bottomLeft + c.m_viewPortWidth*px + c.m_viewPortHeight*py,c.m_origin);
 
             ((*pixles)[i*sceneHeight + j]).position = sf::Vector2f(i,j);
             ((*pixles)[i*sceneHeight + j]).color =  rayColor(ray);
@@ -33,18 +33,23 @@ void Render::startRender(sf::VertexArray* pixles){
 
 sf::Color Render::rayColor(const Ray &ray){
 
-    if (hitSphere(glm::vec3(0,0,-1), 0.5, ray))
+    if (hitSphere(glm::vec3(0,0,-1), 0.1, ray))
         return sf::Color(255, 0, 0);
 
     glm::vec3 rayNormDirection = glm::normalize(ray.getDirection());
     auto t = 0.5*(rayNormDirection.y + 1.0);
-    return sf::Color(255*(1.0-t), 255*(1.0-t),255*1.0) + sf::Color(t*0.5*255,t*0.7*255,t* 1.0*255);
+    return sf::Color(255*(1.0-t), 255*(1.0-t),255*1.0) + sf::Color(t*0.1*255,t*0.7*255,t* 1.0*255);
 }
 bool Render::hitSphere(const glm::vec3& sphereCenter, double radius, const Ray& ray) {
     glm::vec3 oc = ray.getOrigin() - sphereCenter;
     auto a = glm::dot(ray.getDirection(), ray.getDirection());
     auto b = 2.0 * dot(oc, ray.getDirection());
     auto c = dot(oc, oc) - radius*radius;
+    
     auto discriminant = b*b - 4*a*c;
-    return (discriminant > 0);
+
+    if(discriminant > 0){
+        return true;
+    }
+    return false;
 }
