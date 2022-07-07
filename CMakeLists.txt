@@ -22,7 +22,14 @@ if(NOT sfml_POPULATED)
     add_subdirectory(${sfml_SOURCE_DIR} ${sfml_BINARY_DIR})
 endif()
 
-set(SOURCE_FILES main.cpp src/Window.cpp)
+set(SOURCE_FILES 
+    main.cpp
+    src/Window.cpp
+    src/Camera.cpp
+    src/Ray.cpp
+    src/Render.cpp
+    src/Scene.cpp
+)
 add_executable(RAYTRACE ${SOURCE_FILES})
 target_link_libraries(RAYTRACE
     PRIVATE

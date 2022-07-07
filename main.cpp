@@ -1,10 +1,11 @@
 #include <iostream>
 #include <h/Window.hpp>
-
 int main(int, char**) {
     
-	Window* window = new Window(1000,500);
-	window->openWindow();
+	Scene scene(1280,720);
+	Render render(scene);
+	Window* window = new Window(render.getScene().getWidth(),render.getScene().getHeight());
+	window->openWindow(render);
 	delete window;
 
 	return 0;
