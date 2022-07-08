@@ -5,13 +5,15 @@
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include <iostream>
+#include <random>
 class Render{
 
     public:
         Render(Scene& scene) : m_scene(scene),m_camera(Camera(scene.getRatio())) {};
         void startRender(sf::VertexArray*,const Scene&);
-        sf::Color rayColor(const Scene& scene,const Ray &ray);
+        void rayColor(const Scene& scene,const Ray &ray,sf::Color& outColor);
         Scene& getScene(){return m_scene;};
+        
     private:
         Scene& m_scene;
         Camera m_camera;
