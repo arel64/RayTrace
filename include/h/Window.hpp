@@ -1,4 +1,5 @@
-
+#ifndef WINDOW
+#define WINDOW
 #include <h/Render.hpp>
 #include <iostream>
 #include <cstdint>
@@ -25,3 +26,4 @@ class Window{
 
 };
 
+#endif

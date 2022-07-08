@@ -1,3 +1,4 @@
+
 #include <h/Window.hpp>
 
 Window::Window(uint16_t width,uint16_t height){
@@ -7,8 +8,15 @@ Window::Window(uint16_t width,uint16_t height){
 
 void Window::openWindow(Render render){
 	// Create the main window
-    sf::RenderWindow window(sf::VideoMode(m_scrWidth,m_scrHeight), "Ray Trace",sf::Style::Titlebar);
-    sf::VertexArray end(sf::Points,render.getScene().getWidth()*render.getScene().getHeight());
+    sf::RenderWindow window(sf::VideoMode(m_scrWidth,m_scrHeight), "Ray Trace",sf::Style::Titlebar | sf::Style::Close);
+    sf::VertexArray scenePixels(sf::Points,render.getScene().getSize());
+
+    // Clear screen
+    window.clear();
+    render.startRender(&scenePixels,render.getScene());
+    window.draw(scenePixels);
+    // Update the window
+    window.display();
 
     while (window.isOpen())
     {
@@ -20,13 +28,9 @@ void Window::openWindow(Render render){
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        // Clear screen
-        window.clear();
-        render.startRender(&end);
-        window.draw(end);
-        // Update the window
-        window.display();
     }
+        
+    
 }
 
 uint16_t Window::getWindowWidth(){

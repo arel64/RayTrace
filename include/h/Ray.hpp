@@ -1,3 +1,5 @@
+#ifndef RAY
+#define RAY
 #include <glm/glm.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -14,3 +16,4 @@ class Ray{
         glm::vec3 m_origin;
     
 };
+#endif

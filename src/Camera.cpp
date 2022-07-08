@@ -1,3 +1,4 @@
+
 #include <h/Camera.hpp>
 
 Camera::Camera(float ratio){

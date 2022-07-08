@@ -1,4 +1,8 @@
+#ifndef CAMERA
+#define CAMERA
+
 #include <glm/glm.hpp>
+
 class Camera{
     public:
         Camera(float ratio );
@@ -9,3 +13,4 @@ class Camera{
         glm::vec3 m_focalLength;
         glm::vec3 m_origin;
 };
+#endif

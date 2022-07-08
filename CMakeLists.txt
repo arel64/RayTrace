@@ -29,6 +29,7 @@ set(SOURCE_FILES
     src/Ray.cpp
     src/Render.cpp
     src/Scene.cpp
+    src/Sphere.cpp
 )
 add_executable(RAYTRACE ${SOURCE_FILES})
 target_link_libraries(RAYTRACE
