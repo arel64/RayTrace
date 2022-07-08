@@ -3,12 +3,13 @@ project(RAYTRACE)               # Create project "simple_example"
 set(CMAKE_CXX_STANDARD 17)            # Enable c++14 standard
 include(FetchContent)
 
+#######SFML########
 set(SFML_VERSION "2.5.1")
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 include_directories(${INCLUDE_DIR})
-
+include_directories(${CMAKE_PREFIX_PATH}/include)
 
 FetchContent_Declare(
     sfml
@@ -21,6 +22,12 @@ if(NOT sfml_POPULATED)
     FetchContent_Populate(sfml)
     add_subdirectory(${sfml_SOURCE_DIR} ${sfml_BINARY_DIR})
 endif()
+#######GLM########
+
+find_package(glm CONFIG REQUIRED)
+
+
+
 
 set(SOURCE_FILES 
     main.cpp
@@ -38,4 +45,5 @@ target_link_libraries(RAYTRACE
         sfml-graphics
         sfml-system
         sfml-window
+        glm::glm
 )

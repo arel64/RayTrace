@@ -7,5 +7,11 @@
         "memory": "cpp",
         "*.tcc": "cpp",
         "chrono": "cpp"
+    },
+    //Change! absolute path
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "D:/Dev/Dep/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_PREFIX_PATH":"D:/Dev/Dep/vcpkg/packages/glm_x86-windows"
     }
+    
 }
