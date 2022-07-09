@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <mutex>
 
-template <typename T> 
+template <class T> 
 class SafeQueue{
     public:
         SafeQueue(uint32_t size):capacity(size),head(0),tail(-1),size(0){dataArr = new T[size];};
@@ -43,15 +43,16 @@ class SafeQueue{
                 size++;
             endeMutex.unlock();
         }
-        T* dequeue(){
+        T dequeue(){
             // check for queue underflow
             
             if (isEmpty())
             {
-                return nullptr;
+                //Underflow
+                return T();
             }
             endeMutex.lock();
-                T* x = &dataArr[head];
+                T x = dataArr[head];
             
                 head = (head + 1) % capacity;
                 size--;

@@ -3,7 +3,7 @@
 #include <h/Render/Render.hpp>
 #include <iostream>
 #include <cstdint>
-
+#include <thread>
 
 
 class Window{

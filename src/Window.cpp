@@ -8,15 +8,13 @@ Window::Window(uint16_t width,uint16_t height){
 
 void Window::openWindow(Render render){
 	// Create the main window
-    sf::RenderWindow window(sf::VideoMode(m_scrWidth,m_scrHeight), "Ray Trace",sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(m_scrWidth,m_scrHeight), "Ray Trace",sf::Style::None);
     sf::VertexArray scenePixels(sf::Points,render.getScene().getSize());
 
     // Clear screen
     window.clear();
-    render.startRender(&scenePixels,render.getScene());
-    window.draw(scenePixels);
-    // Update the window
-    window.display();
+
+    std::thread renderMasterThread(&Render::startRender,render,&scenePixels,std::ref(render.getScene()));    
 
     while (window.isOpen())
     {
@@ -28,8 +26,13 @@ void Window::openWindow(Render render){
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        window.draw(scenePixels);
+        // Update the window
+        window.display();
+        auto updateRate = std::chrono::duration<int32_t,std::milli>(50);
+        std::this_thread::sleep_for(updateRate);
     }
-        
+    renderMasterThread.join();
     
 }
 

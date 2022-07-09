@@ -6,18 +6,20 @@ struct Coords{
     uint16_t x;
     uint16_t y;
     Coords(uint16_t xPos,uint16_t yPos):x(xPos),y(yPos){};
+    Coords():x(0),y(0){};
 };
 
 class PixelCluster{
     
     public:
         PixelCluster(uint16_t x, uint16_t y,uint16_t width, uint16_t height
-                                    ,sf::VertexArray& pixels):
+                                    ,sf::VertexArray* pixels):
         topLeftCell(x,y),scenePixels(pixels),size(width,height){};
-        
-        const Coords topLeftCell;
-        const Dimentions size;
-        sf::VertexArray& scenePixels;
+        PixelCluster():topLeftCell(Coords()),size(Dimentions()),scenePixels(nullptr){};
+
+        Coords topLeftCell;
+        Dimentions size;
+        sf::VertexArray* scenePixels;
     
 };
 
