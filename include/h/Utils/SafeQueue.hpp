@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <mutex>
+#include <atomic>
 
 template <class T> 
 class SafeQueue{
@@ -12,23 +13,16 @@ class SafeQueue{
         ~SafeQueue(){delete dataArr;};
 
 
-        uint32_t getSize(){
-            uint32_t temp;
-            sizeMutex.lock();
-                temp = size;
-            sizeMutex.unlock();
-            return temp;
-        }
-        void changeSize(uint32_t delta){
-            sizeMutex.lock();
-                size+=delta;
-            sizeMutex.unlock();
+        int64_t getSize(){
+            return size;
         }
         bool isEmpty(){
-            return (getSize() == 0);
+            assert(size>=0);
+            return (getSize() <= 0);
         }
         bool isFull(){
-            return (getSize() == capacity);
+            assert(size<=capacity);
+            return (getSize() >= capacity);
         }
         void enqueue(T data){
             // check for queue overflow
@@ -64,7 +58,7 @@ class SafeQueue{
         T* dataArr;
         int32_t head;
         int32_t tail;
-        uint32_t size;
+        std::atomic<int64_t> size;
         const uint32_t capacity;
 };
 #endif

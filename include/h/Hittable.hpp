@@ -9,7 +9,7 @@ struct HitRecord{
     bool frontFaceNormal;
 
     inline void setFaceNormal(const Ray& ray,const glm::vec3& outwardNormal){
-        frontFaceNormal = glm::dot(ray.getDirection(),outwardNormal) < 0;
+        frontFaceNormal = glm::dot(ray.m_direction,outwardNormal) < 0;
         normal = frontFaceNormal ? outwardNormal:-outwardNormal;
     }
     

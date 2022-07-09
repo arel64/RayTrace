@@ -12,7 +12,8 @@ Camera::Camera(float ratio)
     m_bottomLeft        =m_origin - m_viewPortWidth*(0.5f) - m_viewPortHeight*(0.5f) - m_focalLength;
    
 }
-Ray Camera::getCameraRay(float xCoef,float yCoef){
-    Ray ray(m_bottomLeft + m_viewPortWidth*xCoef + m_viewPortHeight*yCoef,m_origin);
-    return ray;
+void Camera::getCameraRay(float xCoef,float yCoef, Ray &ray)
+{
+    ray.m_direction = m_bottomLeft + m_viewPortWidth*xCoef + m_viewPortHeight*yCoef;
+    ray.m_origin = m_origin;
 }

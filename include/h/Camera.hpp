@@ -6,7 +6,7 @@
 class Camera{
     public:
         Camera(float ratio );
-        Ray getCameraRay(float xCoef,float yCoef);
+        void getCameraRay(float xCoef,float yCoef, Ray &ray);
     public:
         glm::vec3 m_viewPortHeight;
         glm::vec3 m_viewPortWidth;

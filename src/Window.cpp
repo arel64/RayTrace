@@ -25,11 +25,12 @@ void Window::openWindow(Render render){
             // Close window: exit
             if (event.type == sf::Event::Closed)
                 window.close();
+            
         }
         window.draw(scenePixels);
         // Update the window
         window.display();
-        auto updateRate = std::chrono::duration<int32_t,std::milli>(50);
+        auto updateRate = std::chrono::duration<int32_t,std::milli>(5);
         std::this_thread::sleep_for(updateRate);
     }
     renderMasterThread.join();

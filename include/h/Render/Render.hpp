@@ -16,7 +16,7 @@ class Render{
         Render(Scene& scene,uint16_t sample =32,uint16_t threadNum = std::thread::hardware_concurrency());
         void startRender(sf::VertexArray*,const Scene&);
         void rayColor(const Scene& scene,const Ray &ray,sf::Color& outColor);
-        void renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene& scene);
+        void renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene scene);
         Scene& getScene(){return m_scene;};
         
     private:

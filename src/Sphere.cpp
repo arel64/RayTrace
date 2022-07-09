@@ -2,8 +2,8 @@
 #include <h/Sphere.hpp>
 bool Sphere::hit(const Ray& ray,float tMin,float tMax,HitRecord& rec) const{
 
-    glm::vec3 rayDirection = ray.getDirection();
-    glm::vec3 oc = ray.getOrigin() - m_center;
+    glm::vec3 rayDirection = ray.m_direction;
+    glm::vec3 oc = ray.m_origin - m_center;
     //Quadratic formula with factor of 2 removed from it
     float a = glm::dot(rayDirection, rayDirection);
     float b = dot(oc, rayDirection);
