@@ -1,8 +1,5 @@
 
-#include <h/Render.hpp>
-
-
-
+#include <h/Render/Render.hpp>
 
 inline double getRealRand();
 void Render::startRender(sf::VertexArray* pixles,const Scene& scene){
@@ -16,12 +13,14 @@ void Render::startRender(sf::VertexArray* pixles,const Scene& scene){
     
     Camera c(m_scene.getRatio());
 
-    uint64_t duration = 0;
+    //uint64_t duration = 0;
+
     for (int j = sceneHeight -1; j >= 0; --j) {
         for (int i = 0; i < sceneWidth -1; ++i) {
 
             uint32_t accumulateR,accumulateG,accumulateB;
             accumulateR=accumulateG=accumulateB=0;
+
             uint16_t antiAliasingSample =scene.getAntiAliasingSample();
             assert(antiAliasingSample>0);
 
@@ -57,7 +56,7 @@ void Render::startRender(sf::VertexArray* pixles,const Scene& scene){
         }
     }
     auto endTime = std::chrono::steady_clock::now();
-    std::clog <<  "[Render] Real Number: " << duration/(1000*1000) << " ms" ;
+    //std::clog <<  "[Render] Real Number: " << duration/(1000*1000) << " ms" ;
     std::clog <<  "[Render] Total: " << (endTime-startTime).count()/(1000*1000) << " ms" ;
 }
 //TODO:: This whole function is temporary

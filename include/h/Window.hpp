@@ -1,14 +1,10 @@
 #ifndef WINDOW
 #define WINDOW
-#include <h/Render.hpp>
+#include <h/Render/Render.hpp>
 #include <iostream>
 #include <cstdint>
 
 
-struct Dimentions{
-    uint16_t height;
-    uint16_t width;
-}typedef Dimentions;
 
 class Window{
     public:

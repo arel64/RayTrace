@@ -34,7 +34,7 @@ set(SOURCE_FILES
     src/Window.cpp
     src/Camera.cpp
     src/Ray.cpp
-    src/Render.cpp
+    src/Render/Render.cpp
     src/Scene.cpp
     src/Sphere.cpp
 )

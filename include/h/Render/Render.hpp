@@ -2,7 +2,9 @@
 #define RENDER
 #include <h/Scene.hpp>
 #include <h/Ray.hpp>
+#include <h/Dimentions.hpp>
 #include <SFML/Graphics.hpp>
+#include <h/PixelCluster.hpp>
 #include <chrono>
 #include <iostream>
 #include <random>
