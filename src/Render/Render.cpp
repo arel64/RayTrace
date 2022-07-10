@@ -73,35 +73,36 @@ void Render::rayColor(const Scene& scene,const Ray &ray,RandomReal& generator,sf
 void Render::rayColor(const Scene& scene,const Ray &ray,uint16_t reflectionLeft,float factor,RandomReal& generator,sf::Color& outColor){
     assert(reflectionLeft>=0);
     if(reflectionLeft == 0){
-        outColor.r = 100;
-        outColor.g = 100;
+        outColor.r = 0;
+        outColor.g = 0;
         outColor.b = 0;
         return;
     }
     HitRecord rec;
 
-    if(scene.hit(ray,0,std::numeric_limits<double>::infinity(),rec)){
+    if(scene.hit(ray,0.0001f,std::numeric_limits<double>::infinity(),rec)){
         //
         glm::vec3 reflectedTargetPoint;
         generator.findRandPointOnUnitSphereRadius(reflectedTargetPoint);
-        reflectedTargetPoint = rec.normal + reflectedTargetPoint;
+        reflectedTargetPoint = rec.hitPoint + rec.normal + reflectedTargetPoint;
 
         
-        rayColor(scene,Ray(reflectedTargetPoint,rec.hitPoint)
-                                ,reflectionLeft-1,factor*0.5f,generator,outColor
+        rayColor(scene,
+                Ray(reflectedTargetPoint-rec.hitPoint,rec.hitPoint)
+                ,reflectionLeft-1,factor*0.5f,generator,outColor
         );
         return;
     }
     
 
     glm::vec3 rayUnitDirection = glm::normalize(ray.m_direction);
-    float t = 0.5*(rayUnitDirection.y + 1.0)*factor;
-    if(factor!=1){
-        int i = 19;
-    }
-    outColor.r =255*(1.0-t) + t*0.1*255;
-    outColor.g =255*(1.0-t) + t*0.7*255;
-    outColor.b =255*(1.0-t) + t*1.0*255;
+    float t = 0.5*(rayUnitDirection.y + 1.0);
+    assert(t>=0&&t<=1);
+
+    
+    outColor.r =255*((1.0-t) + t*0.1)*factor;
+    outColor.g =255*((1.0-t) + t*0.7)*factor;
+    outColor.b =255*((1.0-t) + t*1.0)*factor;
 }
 void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene scene){
 
