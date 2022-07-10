@@ -12,7 +12,6 @@ m_maxReflections(maxReflections),m_antiAliasingSample(antiAliasingSample),m_thre
 
 
 void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
-    
     auto startTime = std::chrono::steady_clock::now();
     
     std::clog <<  "Render start" << std::endl;
@@ -66,11 +65,11 @@ void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
 
 
 //TODO:: This whole function is temporary need to remove most parameters
-void Render::rayColor(const Scene& scene,const Ray &ray,RandomReal& generator,sf::Color& outColor){
+void Render::rayColor(const Scene& scene,Ray &ray,RandomReal& generator,sf::Color& outColor){
     rayColor(scene,ray,getMaxReflections(),1.0f,generator,outColor);
 
 }
-void Render::rayColor(const Scene& scene,const Ray &ray,uint16_t reflectionLeft,float factor,RandomReal& generator,sf::Color& outColor){
+void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,float factor,RandomReal& generator,sf::Color& outColor){
     assert(reflectionLeft>=0);
     if(reflectionLeft == 0){
         outColor.r = 0;
@@ -82,16 +81,10 @@ void Render::rayColor(const Scene& scene,const Ray &ray,uint16_t reflectionLeft,
 
     if(scene.hit(ray,0.0001f,std::numeric_limits<double>::infinity(),rec)){
         //
-        glm::vec3 reflectedTargetPoint;
-        generator.findRandPointOnUnitSphereRadius(reflectedTargetPoint);
-        reflectedTargetPoint = rec.hitPoint + rec.normal + reflectedTargetPoint;
-
+        float attenuation = 0;
+        rec.material->scatter(ray,attenuation,rec,generator);
+        return rayColor(scene,ray,reflectionLeft-1,factor*attenuation,generator,outColor);
         
-        rayColor(scene,
-                Ray(reflectedTargetPoint-rec.hitPoint,rec.hitPoint)
-                ,reflectionLeft-1,factor*0.5f,generator,outColor
-        );
-        return;
     }
     
 
@@ -99,7 +92,6 @@ void Render::rayColor(const Scene& scene,const Ray &ray,uint16_t reflectionLeft,
     float t = 0.5*(rayUnitDirection.y + 1.0);
     assert(t>=0&&t<=1);
 
-    
     outColor.r =255*((1.0-t) + t*0.1)*factor;
     outColor.g =255*((1.0-t) + t*0.7)*factor;
     outColor.b =255*((1.0-t) + t*1.0)*factor;
@@ -138,9 +130,8 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
                     float xCoef = (float)(i+ generator.generateRandReal())/sceneWidth; 
                     float yCoef = (float)(j+ generator.generateRandReal())/sceneHeight; 
                     c.getCameraRay(xCoef,yCoef, currentPixelRay);
-                    
+
                     rayColor(scene,currentPixelRay,generator,temp);
-                    
                     accumulateR += temp.r;
                     accumulateG += temp.g;
                     accumulateB += temp.b;
@@ -158,4 +149,5 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
             }
         }
     }
+   // printf("Duration: %d \n",duration/(1000*1000));
 }
