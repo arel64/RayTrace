@@ -1,5 +1,6 @@
 
 #include <h/Sphere.hpp>
+#include <iostream>
 bool Sphere::hit(const Ray& ray,float tMin,float tMax,HitRecord& rec) const{
 
     glm::vec3 rayDirection = ray.m_direction;
@@ -15,7 +16,6 @@ bool Sphere::hit(const Ray& ray,float tMin,float tMax,HitRecord& rec) const{
         return false;
     }
      
-    
     // Find the nearest root that lies in the acceptable range.
     float sqrd = glm::sqrt(discriminant);
     float root = (-b - sqrd) / a;

@@ -3,15 +3,16 @@
 #define FUNNY_MODE true
 inline double getRealRand();
 
-Render::Render(Scene& scene,uint16_t sampleSize, uint16_t threadNum):
-m_sampleSize(sampleSize),m_scene(scene),m_camera(Camera(scene.getRatio())),m_threadNum(threadNum)
+Render::Render(Scene& scene,uint16_t sampleSize,uint16_t antiAliasingSample,uint16_t maxReflections, uint16_t threadNum):
+m_sampleSize(sampleSize),m_scene(scene),m_camera(Camera(scene.getRatio())),
+m_maxReflections(maxReflections),m_antiAliasingSample(antiAliasingSample),m_threadNum(threadNum)
 {
     m_tpool = new std::thread[threadNum];
 }
 
 
 void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
-
+    
     auto startTime = std::chrono::steady_clock::now();
     
     std::clog <<  "Render start" << std::endl;
@@ -64,28 +65,44 @@ void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
 
 
 
-//TODO:: This whole function is temporary
-void Render::rayColor(const Scene& scene,const Ray &ray,sf::Color& outColor){
+//TODO:: This whole function is temporary need to remove most parameters
+void Render::rayColor(const Scene& scene,const Ray &ray,RandomReal& generator,sf::Color& outColor){
+    rayColor(scene,ray,getMaxReflections(),1.0f,generator,outColor);
+
+}
+void Render::rayColor(const Scene& scene,const Ray &ray,uint16_t reflectionLeft,float factor,RandomReal& generator,sf::Color& outColor){
+    assert(reflectionLeft>=0);
+    if(reflectionLeft == 0){
+        outColor.r = 100;
+        outColor.g = 100;
+        outColor.b = 0;
+        return;
+    }
     HitRecord rec;
 
-    if(scene.hit(ray,0.0f,std::numeric_limits<double>::infinity(),rec)){
-        glm::vec3 rayNormalAt = glm::normalize(ray.at(rec.t) - glm::vec3(0,0,-1));
+    if(scene.hit(ray,0,std::numeric_limits<double>::infinity(),rec)){
+        //
+        glm::vec3 reflectedTargetPoint;
+        generator.findRandPointOnUnitSphereRadius(reflectedTargetPoint);
+        reflectedTargetPoint = rec.normal + reflectedTargetPoint;
+
         
-        outColor.r =255;
-        outColor.g =glm::abs(rayNormalAt.z)*255;
-        outColor.b =255;
+        rayColor(scene,Ray(reflectedTargetPoint,rec.hitPoint)
+                                ,reflectionLeft-1,factor*0.5f,generator,outColor
+        );
         return;
     }
     
 
-    glm::vec3 rayNormDirection = glm::normalize(ray.m_direction);
-    float t = 0.5*(rayNormDirection.y + 1.0);
-
+    glm::vec3 rayUnitDirection = glm::normalize(ray.m_direction);
+    float t = 0.5*(rayUnitDirection.y + 1.0)*factor;
+    if(factor!=1){
+        int i = 19;
+    }
     outColor.r =255*(1.0-t) + t*0.1*255;
     outColor.g =255*(1.0-t) + t*0.7*255;
-    outColor.b =255*(1.0-t) + t* 1.0*255;
+    outColor.b =255*(1.0-t) + t*1.0*255;
 }
-
 void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene scene){
 
     //Scene Camera
@@ -94,13 +111,10 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
     uint16_t sceneWidth = m_scene.getWidth();
 
     //AA 
-    uint16_t antiAliasingSample =scene.getAntiAliasingSample();
+    uint16_t antiAliasingSample = getAntiAliasingSample();
     
     //Random Generation
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_real_distribution<double> rand(0.0,1.0);
-
+    RandomReal generator(0,1);
     //Run until renderQueue is empty
     while(!renderQueue->isEmpty()){
 
@@ -120,11 +134,11 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
                 Ray currentPixelRay;
                 //This is for each pixel, tread lightly!
                 for(uint16_t m = 0 ; m < antiAliasingSample; m++){
-                    float xCoef = (float)(i+ rand(rng))/sceneWidth; 
-                    float yCoef = (float)(j+ rand(rng))/sceneHeight; 
+                    float xCoef = (float)(i+ generator.generateRandReal())/sceneWidth; 
+                    float yCoef = (float)(j+ generator.generateRandReal())/sceneHeight; 
                     c.getCameraRay(xCoef,yCoef, currentPixelRay);
                     
-                    rayColor(scene,currentPixelRay,temp);
+                    rayColor(scene,currentPixelRay,generator,temp);
                     
                     accumulateR += temp.r;
                     accumulateG += temp.g;
