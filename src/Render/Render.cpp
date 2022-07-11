@@ -82,7 +82,13 @@ void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,float 
     if(scene.hit(ray,0.0001f,std::numeric_limits<double>::infinity(),rec)){
         //
         float attenuation = 0;
-        rec.material->scatter(ray,attenuation,rec,generator);
+        if(!rec.material->scatter(ray,attenuation,rec,generator)){
+            outColor.r = 0;
+            outColor.g = 0;
+            outColor.b = 0;
+            return;
+            
+        }
         
         rayColor(scene,ray,reflectionLeft-1,factor*attenuation,generator,outColor);
         return;

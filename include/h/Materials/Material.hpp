@@ -7,7 +7,7 @@
 
 class Material{
     public:
-        virtual void scatter(Ray&,float&,HitRecord&,RandomReal&) = 0;
+        virtual bool scatter(Ray&,float&,HitRecord&,RandomReal&) = 0;
 
 };
 

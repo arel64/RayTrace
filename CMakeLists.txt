@@ -39,6 +39,7 @@ set(SOURCE_FILES
     src/Sphere.cpp
     src/Utils/RandomReal.cpp
     src/Materials/Diffuse.cpp
+    src/Materials/Metal.cpp
 )
 add_executable(RAYTRACE ${SOURCE_FILES})
 target_link_libraries(RAYTRACE
