@@ -1,7 +1,7 @@
 #include <h/Materials/Diffuse.hpp>
 
 
-bool Diffuse::scatter(Ray& ray,float& attenuation,HitRecord& rec,RandomReal& generator){
+bool Diffuse::scatter(Ray& ray, Color& attenuation,HitRecord& rec,RandomReal& generator){
         glm::vec3 scatteredTarget;
         generator.findRandPointOnUnitSphereRadius(scatteredTarget);
 

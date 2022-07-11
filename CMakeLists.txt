@@ -25,8 +25,12 @@ endif()
 #######GLM########
 
 find_package(glm CONFIG REQUIRED)
-
-
+if (WIN32)
+    add_compile_definitions(WIN32)
+endif (WIN32)
+if (UNIX)
+    add_compile_definitions(UNIX)
+endif (UNIX)
 
 
 set(SOURCE_FILES 

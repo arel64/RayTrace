@@ -6,11 +6,11 @@
 
 class Metal : public Material{
     public:
-        Metal(float albedo): m_albedo(albedo){};
-        virtual bool scatter(Ray&,float&,HitRecord&,RandomReal&)override;
-        float getAlbedo(){return m_albedo;};
+        Metal(const Color& albedo): m_albedo(albedo){};
+        virtual bool scatter(Ray&,Color&,HitRecord&,RandomReal&)override;
+        const Color& getAlbedo(){return m_albedo;};
     private:
-        float m_albedo; 
+        Color m_albedo; 
 };
 
 #endif 

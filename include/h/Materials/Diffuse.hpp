@@ -4,11 +4,11 @@
 #include <h/Materials/Material.hpp>
 class Diffuse : public Material{
     public:
-        Diffuse(float albedo): m_albedo(albedo){};
-        virtual bool scatter(Ray&,float&,HitRecord&,RandomReal&)override;
-        float getAlbedo(){return m_albedo;};
+        Diffuse(const Color& albedo): m_albedo(albedo){};
+        virtual bool scatter(Ray&,Color&,HitRecord&,RandomReal&)override;
+        const Color& getAlbedo(){return m_albedo;};
     private:
-        float m_albedo; 
+        Color m_albedo; 
 };
 
 #endif 

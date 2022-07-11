@@ -65,32 +65,30 @@ void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
 
 
 //TODO:: This whole function is temporary need to remove most parameters
-void Render::rayColor(const Scene& scene,Ray &ray,RandomReal& generator,sf::Color& outColor){
-    rayColor(scene,ray,getMaxReflections(),1.0f,generator,outColor);
+void Render::rayColor(const Scene& scene,Ray &ray,RandomReal& generator,Color& outColor){
+    rayColor(scene,ray,getMaxReflections(),generator,outColor);
 
 }
-void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,float factor,RandomReal& generator,sf::Color& outColor){
+void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,RandomReal& generator,Color& outColor){
     assert(reflectionLeft>=0);
     if(reflectionLeft == 0){
-        outColor.r = 0;
-        outColor.g = 0;
-        outColor.b = 0;
+        outColor = Color(0,0,0);
         return;
     }
     HitRecord rec;
 
     if(scene.hit(ray,0.0001f,std::numeric_limits<double>::infinity(),rec)){
         //
-        float attenuation = 0;
+        Color attenuation;
         if(!rec.material->scatter(ray,attenuation,rec,generator)){
-            outColor.r = 0;
-            outColor.g = 0;
-            outColor.b = 0;
+            outColor = Color(0,0,0);
             return;
             
         }
-        
-        rayColor(scene,ray,reflectionLeft-1,factor*attenuation,generator,outColor);
+        //assert(outColor.r==0&&outColor.g==0);
+        outColor*=attenuation;
+
+        rayColor(scene,ray,reflectionLeft-1,generator,outColor);
         return;
     }
     
@@ -98,13 +96,9 @@ void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,float 
     glm::vec3 rayUnitDirection = glm::normalize(ray.m_direction);
     float t = 0.5*(rayUnitDirection.y + 1.0);
     assert(t>=0&&t<=1);
-
-    outColor.r =255*((1.0-t) + t*0.1)*factor;
-    outColor.g =255*((1.0-t) + t*0.7)*factor;
-    outColor.b =255*((1.0-t) + t*1.0)*factor;
+    outColor = (Color(1.0, 1.0, 1.0)*(1.0-t) +Color(0.5, 0.7, 1.0)* t)*outColor;
 }
 void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene scene){
-
     //Scene Camera
     Camera c(scene.getRatio());
     uint16_t sceneHeight = m_scene.getHeight();
@@ -123,38 +117,38 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
         for (uint16_t j = pixelCluster.topLeftCell.y ; j <= pixelCluster.topLeftCell.y + pixelCluster.size.height -1 ; j++) {
             for (uint16_t i = pixelCluster.topLeftCell.x  ; i < pixelCluster.topLeftCell.x + pixelCluster.size.width ; i++) {
 
-                uint32_t accumulateR,accumulateG,accumulateB;
+                float accumulateR,accumulateG,accumulateB;
                 accumulateR=accumulateG=accumulateB=0;
 
                 assert(antiAliasingSample>0);
 
 
 
-                sf::Color temp;
-                Ray currentPixelRay;
+                
+                
                 //This is for each pixel, tread lightly!
                 for(uint16_t m = 0 ; m < antiAliasingSample; m++){
                     float xCoef = (float)(i+ generator.generateRandReal())/sceneWidth; 
                     float yCoef = (float)(j+ generator.generateRandReal())/sceneHeight; 
+                    Ray currentPixelRay;
+                    Color temp(1,1,1);
                     c.getCameraRay(xCoef,yCoef, currentPixelRay);
-
                     rayColor(scene,currentPixelRay,generator,temp);
                     accumulateR += temp.r;
                     accumulateG += temp.g;
                     accumulateB += temp.b;
 
                 }
-                sf::Color pixelColor(
+
+                Color pixelColor(
                     accumulateR/antiAliasingSample,
                     accumulateG/antiAliasingSample,
                     accumulateB/antiAliasingSample
                 );
-            
+                auto p =pixelColor.toSFMLColor();
                 ((*pixelCluster.scenePixels)[i*sceneHeight + j]).position = sf::Vector2f(i,j);
-                ((*pixelCluster.scenePixels)[i*sceneHeight + j]).color =  pixelColor;
-
+                ((*pixelCluster.scenePixels)[i*sceneHeight + j]).color = p ;
             }
         }
     }
-   // printf("Duration: %d \n",duration/(1000*1000));
 }

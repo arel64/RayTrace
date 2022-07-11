@@ -1,6 +1,8 @@
 
 #include <h/Window.hpp>
-
+#ifdef WIN32
+    #include <Windows.h>
+#endif
 Window::Window(uint16_t width,uint16_t height){
 	m_scrHeight = height;
 	m_scrWidth  = width;
@@ -10,7 +12,6 @@ void Window::openWindow(Render render){
 	// Create the main window
     sf::RenderWindow window(sf::VideoMode(m_scrWidth,m_scrHeight), "Ray Trace",sf::Style::None);
     sf::VertexArray scenePixels(sf::Points,render.getScene().getSize());
-
     // Clear screen
     window.clear();
 
@@ -23,7 +24,9 @@ void Window::openWindow(Render render){
         while (window.pollEvent(event))
         {
             // Close window: exit
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)
+                )
                 window.close();
             
         }

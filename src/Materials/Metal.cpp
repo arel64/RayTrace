@@ -1,5 +1,5 @@
 #include <h/Materials/Metal.hpp>
-bool Metal::scatter(Ray& ray,float& attenuation,HitRecord& rec,RandomReal& generator){
+bool Metal::scatter(Ray& ray,Color& attenuation,HitRecord& rec,RandomReal& generator){
 
         //Reflection formula: v - 2*dot(v,n)*n
 
