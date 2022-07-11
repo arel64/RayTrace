@@ -2,7 +2,6 @@
 
 
 void Diffuse::scatter(Ray& ray,float& attenuation,HitRecord& rec,RandomReal& generator){
-        
         glm::vec3 reflectedTargetPoint;
         generator.findRandPointOnUnitSphereRadius(reflectedTargetPoint);
         reflectedTargetPoint = rec.hitPoint + rec.normal + reflectedTargetPoint;
@@ -13,4 +12,4 @@ void Diffuse::scatter(Ray& ray,float& attenuation,HitRecord& rec,RandomReal& gen
 
         attenuation = m_albedo;
 
-}
+} 

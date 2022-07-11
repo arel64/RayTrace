@@ -83,8 +83,9 @@ void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,float 
         //
         float attenuation = 0;
         rec.material->scatter(ray,attenuation,rec,generator);
-        return rayColor(scene,ray,reflectionLeft-1,factor*attenuation,generator,outColor);
         
+        rayColor(scene,ray,reflectionLeft-1,factor*attenuation,generator,outColor);
+        return;
     }
     
 

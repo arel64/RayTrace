@@ -11,4 +11,4 @@ class Diffuse : public Material{
         float m_albedo; 
 };
 
-#endif
+#endif 

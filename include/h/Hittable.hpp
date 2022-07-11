@@ -2,12 +2,10 @@
 #define HITRECORD
 
 #include <h/Ray.hpp>
-#include <memory>
 class Material;
 
-
 struct HitRecord{
-    std::shared_ptr<Material> material;
+    Material* material;
     glm::vec3 hitPoint;
     glm::vec3 normal;
     float t;
