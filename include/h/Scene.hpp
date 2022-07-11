@@ -9,7 +9,7 @@ class Scene{
     public:
         Scene(uint16_t width,uint16_t height) :
                  m_width(width),m_height(height){};
-        float getRatio()const{return ((float)m_width)/m_height;};
+        float    getRatio()const{return ((float)m_width)/m_height;};
         uint16_t getWidth()const{return m_width;};
         uint16_t getHeight()const{return m_height;};
         uint32_t getSize()const{return m_height*m_width;};

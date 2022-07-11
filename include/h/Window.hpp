@@ -8,7 +8,7 @@
 
 class Window{
     public:
-        Window(Dimentions& d): m_scrHeight(d.height),m_scrWidth(d.width) {};
+        Window(Dimentions& d): m_scrHeight(d.x),m_scrWidth(d.y) {};
         Window(uint16_t,uint16_t);
         void openWindow(Render);
         uint16_t getWindowWidth();

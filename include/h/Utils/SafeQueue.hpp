@@ -13,17 +13,9 @@ class SafeQueue{
         ~SafeQueue(){delete dataArr;};
 
 
-        int64_t getSize(){
-            return size;
-        }
-        bool isEmpty(){
-            assert(size>=0);
-            return (getSize() <= 0);
-        }
-        bool isFull(){
-            assert(size<=capacity);
-            return (getSize() >= capacity);
-        }
+        int64_t getSize(){return size;}
+        bool isEmpty(){return (getSize() <= 0);}
+        bool isFull(){return (getSize() >= capacity);}
         void enqueue(T data){
             // check for queue overflow
             
@@ -37,6 +29,7 @@ class SafeQueue{
                 size++;
             endeMutex.unlock();
         }
+        
         T dequeue(){
             // check for queue underflow
             
@@ -53,12 +46,17 @@ class SafeQueue{
             endeMutex.unlock();
             return x;
         }
+
     public:
-        std::mutex endeMutex,sizeMutex;
-        T* dataArr;
-        int32_t head;
-        int32_t tail;
-        std::atomic<int64_t> size;
-        const uint32_t capacity;
+        T*                      dataArr;
+        
+        int32_t                 head;
+        int32_t                 tail;
+        const uint32_t          capacity;
+
+        std::atomic<int64_t>    size;
+        std::mutex              endeMutex;
+
+    
 };
 #endif

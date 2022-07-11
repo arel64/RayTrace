@@ -18,7 +18,7 @@ int main(int, char**) {
 
 
 	//sample,antiAliasingSample,maxReflections,uint16_t threadNum
-	Render render(scene,32,100,300);
+	Render render(scene,32,100,200);
 	Window* window = new Window(render.getScene().getWidth(),render.getScene().getHeight());
 	window->openWindow(render);
 

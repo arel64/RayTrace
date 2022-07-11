@@ -3,37 +3,50 @@
 #define FUNNY_MODE true
 inline double getRealRand();
 
-Render::Render(Scene& scene,uint16_t sampleSize,uint16_t antiAliasingSample,uint16_t maxReflections, uint16_t threadNum):
-m_sampleSize(sampleSize),m_scene(scene),m_camera(Camera(scene.getRatio())),
-m_maxReflections(maxReflections),m_antiAliasingSample(antiAliasingSample),m_threadNum(threadNum)
+Render::Render(Scene& scene,uint16_t sampleSize,uint16_t antiAliasingSample,
+    uint16_t maxReflections, uint16_t threadNum):
+        m_sampleSize(sampleSize),m_scene(scene),m_camera(Camera(scene.getRatio())),
+        m_maxReflections(maxReflections),m_antiAliasingSample(antiAliasingSample),m_threadNum(threadNum)
 {
     m_tpool = new std::thread[threadNum];
 }
 
 
 void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
+
     auto startTime = std::chrono::steady_clock::now();
-    
     std::clog <<  "Render start" << std::endl;
+
+
     uint16_t sceneHeight = m_scene.getHeight();
     uint16_t sceneWidth = m_scene.getWidth();
-    //Load render queue
+    
+    
+   
     uint16_t verticalClusterNum     = glm::ceil(((float)sceneWidth)/m_sampleSize);
     uint16_t horizontalClusterNum   = glm::ceil(((float)sceneHeight)/m_sampleSize);
-    SafeQueue<PixelCluster>* renderQueue = new SafeQueue<PixelCluster>(verticalClusterNum*horizontalClusterNum);
-
-    assert(sceneWidth>=m_sampleSize);
+    assert(sceneWidth>=m_sampleSize);//Add Test in constructor
     assert(sceneHeight>=m_sampleSize);
+
+
+    //Create Render Queue
+
+    SafeQueue<PixelCluster>* renderQueue = 
+        new SafeQueue<PixelCluster>(verticalClusterNum*horizontalClusterNum);
+
+    uint16_t turnucatedSampleSizeX = m_sampleSize;
+    uint16_t turnucatedSampleSizeY = m_sampleSize;
 
     for (uint16_t i = 0; i < sceneWidth; i+=m_sampleSize)
     {
-        uint16_t turnucatedSampleSizeX = m_sampleSize;
-        if(i+m_sampleSize>sceneWidth){
+        turnucatedSampleSizeX = m_sampleSize;
+        //Sample size is bigger than pixels in window in width directions
+        if(i+m_sampleSize > sceneWidth){
             turnucatedSampleSizeX = sceneWidth - i; 
         }
         for (uint16_t j = 0; j < sceneHeight; j+=m_sampleSize)
         {
-            uint16_t turnucatedSampleSizeY = m_sampleSize;
+            turnucatedSampleSizeY = m_sampleSize;
             if(j+m_sampleSize>sceneHeight){
                 turnucatedSampleSizeY = sceneHeight - j; 
             }
@@ -43,62 +56,60 @@ void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
         }
         
     }
-    //Start rendering threads
+
+    //Starting Rendering threads
  
     for (size_t i = 0; i < m_threadNum; i++)
     {
-        m_tpool[i] = std::thread(&Render::renderQueueElement,this,
-        renderQueue,scene);
+        m_tpool[i] = std::thread(&Render::renderQueueElements,this,renderQueue,scene);
     }
     
     for (size_t i = 0; i < m_threadNum; i++)
     {
         m_tpool[i].join();
     }
+    
     auto endTime = std::chrono::steady_clock::now();
-    delete renderQueue;
+    
+    
     std::clog <<  "[Render] Total: " << (endTime-startTime).count()/(1000*1000) << " ms" ;
     std::clog << "Done!";
+
+    //Cleanup
+    delete renderQueue;
+    
 }
 
 
+void Render::colorRay(Ray &ray,const Scene& scene,RandomReal& generator){
 
-
-//TODO:: This whole function is temporary need to remove most parameters
-void Render::rayColor(const Scene& scene,Ray &ray,RandomReal& generator,Color& outColor){
-    rayColor(scene,ray,getMaxReflections(),generator,outColor);
-
-}
-void Render::rayColor(const Scene& scene,Ray &ray,uint16_t reflectionLeft,RandomReal& generator,Color& outColor){
-    assert(reflectionLeft>=0);
-    if(reflectionLeft == 0){
-        outColor = Color(0,0,0);
-        return;
-    }
+   
     HitRecord rec;
 
     if(scene.hit(ray,0.0001f,std::numeric_limits<double>::infinity(),rec)){
-        //
-        Color attenuation;
-        if(!rec.material->scatter(ray,attenuation,rec,generator)){
-            outColor = Color(0,0,0);
+        
+        if(!rec.material->scatter(ray,rec,generator)){
+            //Cannot be scattered
+            ray.m_color = Color(0,0,0);
             return;
-            
         }
-        //assert(outColor.r==0&&outColor.g==0);
-        outColor*=attenuation;
 
-        rayColor(scene,ray,reflectionLeft-1,generator,outColor);
-        return;
+        ray.m_reflectionsLeft--;
+        if(ray.m_reflectionsLeft == 0){
+            ray.m_color = Color(0,0,0);
+            return;
+        }
+        //Return is needed for proper functionality
+        return colorRay(ray,scene,generator);
+        
     }
-    
 
     glm::vec3 rayUnitDirection = glm::normalize(ray.m_direction);
     float t = 0.5*(rayUnitDirection.y + 1.0);
-    assert(t>=0&&t<=1);
-    outColor = (Color(1.0, 1.0, 1.0)*(1.0-t) +Color(0.5, 0.7, 1.0)* t)*outColor;
+    //Don't forget to multiply by raycolor....
+    ray.m_color = (Color(1.0, 1.0, 1.0)*(1.0-t) +Color(0.5, 0.7, 1.0)* t)*ray.m_color;
 }
-void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene scene){
+void Render::renderQueueElements(SafeQueue<PixelCluster>* renderQueue,const Scene scene){
     //Scene Camera
     Camera c(scene.getRatio());
     uint16_t sceneHeight = m_scene.getHeight();
@@ -114,8 +125,8 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
 
         PixelCluster pixelCluster = renderQueue->dequeue();
 
-        for (uint16_t j = pixelCluster.topLeftCell.y ; j <= pixelCluster.topLeftCell.y + pixelCluster.size.height -1 ; j++) {
-            for (uint16_t i = pixelCluster.topLeftCell.x  ; i < pixelCluster.topLeftCell.x + pixelCluster.size.width ; i++) {
+        for (uint16_t j = pixelCluster.topLeftCell.y ; j <= pixelCluster.topLeftCell.y + pixelCluster.size.y -1 ; j++) {
+            for (uint16_t i = pixelCluster.topLeftCell.x  ; i < pixelCluster.topLeftCell.x + pixelCluster.size.x ; i++) {
 
                 float accumulateR,accumulateG,accumulateB;
                 accumulateR=accumulateG=accumulateB=0;
@@ -123,20 +134,19 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
                 assert(antiAliasingSample>0);
 
 
-
-                
-                
                 //This is for each pixel, tread lightly!
                 for(uint16_t m = 0 ; m < antiAliasingSample; m++){
+
                     float xCoef = (float)(i+ generator.generateRandReal())/sceneWidth; 
                     float yCoef = (float)(j+ generator.generateRandReal())/sceneHeight; 
-                    Ray currentPixelRay;
-                    Color temp(1,1,1);
+
+                    Ray currentPixelRay(m_maxReflections);
                     c.getCameraRay(xCoef,yCoef, currentPixelRay);
-                    rayColor(scene,currentPixelRay,generator,temp);
-                    accumulateR += temp.r;
-                    accumulateG += temp.g;
-                    accumulateB += temp.b;
+                    colorRay(currentPixelRay,scene,generator);
+                    
+                    accumulateR += currentPixelRay.m_color.r;
+                    accumulateG += currentPixelRay.m_color.g;
+                    accumulateB += currentPixelRay.m_color.b;
 
                 }
 
@@ -145,7 +155,7 @@ void Render::renderQueueElement(SafeQueue<PixelCluster>* renderQueue,const Scene
                     accumulateG/antiAliasingSample,
                     accumulateB/antiAliasingSample
                 );
-                auto p =pixelColor.toSFMLColor();
+                auto p = pixelColor.toSFMLColor();
                 ((*pixelCluster.scenePixels)[i*sceneHeight + j]).position = sf::Vector2f(i,j);
                 ((*pixelCluster.scenePixels)[i*sceneHeight + j]).color = p ;
             }

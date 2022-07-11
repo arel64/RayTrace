@@ -8,6 +8,8 @@ set(SFML_VERSION "2.5.1")
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
+#For intellisense
+set(DCMAKE_EXPORT_COMPILE_COMMANDS 1)
 include_directories(${INCLUDE_DIR})
 include_directories(${CMAKE_PREFIX_PATH}/include)
 
@@ -42,6 +44,7 @@ set(SOURCE_FILES
     src/Scene.cpp
     src/Sphere.cpp
     src/Utils/RandomReal.cpp
+    src/Utils/Color.cpp
     src/Materials/Diffuse.cpp
     src/Materials/Metal.cpp
 )

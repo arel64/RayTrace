@@ -30,6 +30,8 @@ void Window::openWindow(Render render){
                 window.close();
             
         }
+
+        
         window.draw(scenePixels);
         // Update the window
         window.display();

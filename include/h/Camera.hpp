@@ -5,8 +5,8 @@
 #include <h/Ray.hpp>
 class Camera{
     public:
-        Camera(float ratio );
-        void getCameraRay(float xCoef,float yCoef, Ray &ray);
+        Camera(float ratio);
+        void getCameraRay(float,float, Ray &);
     public:
         glm::vec3 m_viewPortHeight;
         glm::vec3 m_viewPortWidth;
