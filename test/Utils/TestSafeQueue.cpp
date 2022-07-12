@@ -1,3 +1,4 @@
+#include <array>
 #include <chrono>
 #include <cstddef>
 #include <gtest/gtest.h>
@@ -83,5 +84,55 @@ TEST(testSafeQueue, threadedIO) {
     timeoutThread.join();
 
     ASSERT_TRUE(queue->isEmpty());
+    delete queue;
+}
+TEST(testSafeQueue, performanceTest4Cores) {
+    if(std::thread::hardware_concurrency() < 4){
+        GTEST_SKIP();
+    }
+    uint16_t capacity = 50000;
+    auto insertElementTime = 6ns;
+    auto removeElementTime = 6ns;
+
+    SafeQueue<PixelCluster>* queue= new SafeQueue<PixelCluster>(capacity);
+    auto a = PixelCluster(1,2,200,120,nullptr);
+    auto b = PixelCluster(1,2,500,120,nullptr);
+
+    auto startTime = std::chrono::steady_clock::now();
+    
+    std::array<std::thread,4> threads;
+    for( auto& thread: threads){
+        thread = std::thread([a,b,&queue]()
+            {
+                while(!queue->isFull())
+                    queue->enqueue(queue->getSize()%2==0?a:b);
+            }
+        );
+    }
+    auto endEnqueue = std::chrono::steady_clock::now();
+    auto timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(endEnqueue-startTime);
+    EXPECT_LE(timePassed, insertElementTime*capacity);
+    for( auto& thread: threads){
+        thread.join();
+    }
+
+
+    startTime = std::chrono::steady_clock::now();
+    for( auto& thread: threads){
+        thread = std::thread([&queue]()
+            {
+                while(!queue->isEmpty())
+                    queue->dequeue();
+            }
+        );
+    }
+    auto endDequeue = std::chrono::steady_clock::now();
+    timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(endEnqueue-startTime);
+
+    EXPECT_LE(timePassed, removeElementTime*capacity);
+    for( auto& thread: threads){
+        thread.join();
+    }
+
     delete queue;
 }
