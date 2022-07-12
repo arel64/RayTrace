@@ -16,6 +16,7 @@ set(This TestRayTrace)
 set(Sources
     TestDev.cpp
     Utils/TestColor.cpp
+    Utils/TestSafeQueue.cpp
 )
 
 

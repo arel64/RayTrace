@@ -8,10 +8,10 @@
     }
     Color Color::operator+(const Color& rhs) 
     {                           
-        auto r = std::clamp(this->r+rhs.r,0.0f,1.0f);
-        auto g = std::clamp(this->g+rhs.g,0.0f,1.0f);
-        auto b = std::clamp(this->b+rhs.b,0.0f,1.0f);
-        auto a  = std::clamp(this->alpha+rhs.alpha,0.0f,1.0f);
+        auto r = this->r+rhs.r;
+        auto g = this->g+rhs.g;
+        auto b = this->b+rhs.b;
+        auto a  =this->alpha+rhs.alpha;
         return Color(r,g,b,a); // return the result by reference
     }
     
@@ -32,10 +32,10 @@
     Color operator*(const Color& color,float scalar) 
     {                           
         
-        auto r = std::clamp(color.r*scalar,0.0f,1.0f);
-        auto g = std::clamp(color.g*scalar,0.0f,1.0f);
-        auto b = std::clamp(color.b*scalar,0.0f,1.0f);
-        auto a  = std::clamp(color.alpha*scalar,0.0f,1.0f);
+        auto r = color.r*scalar;
+        auto g = color.g*scalar;
+        auto b = color.b*scalar;
+        auto a = color.alpha*scalar;
         return Color(r,g,b,a); // return the result by reference
 
     }

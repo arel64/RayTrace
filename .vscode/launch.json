@@ -1,4 +1,5 @@
 {
+    
     "setupCommands": [
         /*{
             "description": "Enable pretty-printing for gdb",
@@ -9,6 +10,19 @@
             "description": "Enable break on all exceptions",
             "text": "catch throw",
             "ignoreFailures": true
+        },
+        {    
+            "gtest-adapter.debugConfig": "debug",
+            "gtest-adapter.showCodeLens": true,
+            "gtest-adapter.refreshAfterBuild": true,
+            "gtest-adapter.runAfterBuild": false,
+            "gtest-adapter.gotoTestTitle": "Go to Tree",
+            "gtest-adapter.runTitle": "Run",
+            "gtest-adapter.debugTitle": "Debug",
+            "gtest-adapter.supportLocation": false,
+            "gtest-adapter.showRunOutput": true,
+            "gtest-adapter.clearRunOutput": true,
         }
     ],
+    
 }

@@ -73,6 +73,28 @@
         "CMAKE_PREFIX_PATH":"D:/Dev/Dep/vcpkg/packages/glm_x86-windows",
         "CMAKE_DEPS":"D:/Dev/Workspace/RayTrace/build/_deps",
     },
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "googletest.failed",
+                "settings": {
+                    "foreground": "#f00"
+                }
+            },
+            {
+                "scope": "googletest.passed",
+                "settings": {
+                    "foreground": "#0f0"
+                }
+            },
+            {
+                "scope": "googletest.run",
+                "settings": {
+                    "foreground": "#0f0"
+                }
+            }
+        ]
+    },
     
     
 }
