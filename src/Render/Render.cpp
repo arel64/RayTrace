@@ -155,6 +155,8 @@ void Render::renderQueueElements(SafeQueue<PixelCluster>* renderQueue,const Scen
                     accumulateG/antiAliasingSample,
                     accumulateB/antiAliasingSample
                 );
+                //pixelColor.gammaCorrect(antiAliasingSample);
+
                 auto p = pixelColor.toSFMLColor();
                 ((*pixelCluster.scenePixels)[i*sceneHeight + j]).position = sf::Vector2f(i,j);
                 ((*pixelCluster.scenePixels)[i*sceneHeight + j]).color = p ;

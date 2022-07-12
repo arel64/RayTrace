@@ -47,6 +47,8 @@ set(SOURCE_FILES
     src/Utils/Color.cpp
     src/Materials/Diffuse.cpp
     src/Materials/Metal.cpp
+    src/Materials/Dielectric.cpp
+
 )
 add_executable(RAYTRACE ${SOURCE_FILES})
 target_link_libraries(RAYTRACE
