@@ -73,10 +73,6 @@
         "CMAKE_PREFIX_PATH":"D:/Dev/Dep/vcpkg/packages/glm_x86-windows",
         "CMAKE_DEPS":"D:/Dev/Workspace/RayTrace/build/_deps",
     },
-    "clangd.arguments": [
-        "-background-index",
-        "-Wall"
-    ],
     
     
 }

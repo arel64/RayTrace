@@ -14,6 +14,7 @@ set(BUILD_SHARED_LIBS 1)
 
 set(This TestRayTrace)
 set(Sources
+    TestDev.cpp
     Utils/TestColor.cpp
 )
 

@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <h/Utils/Color.hpp>
 struct Ray{
-    
     public:
         //Ray() {}
         Ray(uint16_t reflectionsLeft,Color color = Color(1,1,1)):
@@ -16,7 +15,6 @@ struct Ray{
             m_direction(dire),m_origin(orig),m_reflectionsLeft(reflectionsLeft),m_color(color){};
         
         glm::vec3   at(float t)const;
-
         glm::vec3   m_direction;
         glm::vec3   m_origin;
         uint16_t    m_reflectionsLeft;

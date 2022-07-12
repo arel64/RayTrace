@@ -1,14 +1,19 @@
-#include "main.hpp"
-int main(int, char**) {
-    
-	Scene scene(1024,720);
+#include <gtest\gtest.h>
+#include <h/Window.hpp>
+#include <h/Sphere.hpp>
+#include <h/Utils/SafeQueue.hpp>
+#include <h/Materials/Metal.hpp>
+#include <h/Materials/Diffuse.hpp>
+#include <h/Materials/Dielectric.hpp>
+#include <h/Utils/Color.hpp>
 
-
+TEST(DISABLED_testDev, BasicAssertions) {
+    Scene scene(1024,720);
 	Diffuse* material_ground 	= new Diffuse(Color(0.8, 0.8, 0.0));
 	Dielectric* material_center   		= new Dielectric(1.5);
     Dielectric* material_left     		= new Dielectric(1.5);
     Metal* material_right  		= new Metal(Color(0.8, 0.6, 0.2),1.0f);
-
+	
     scene.addObject(std::make_shared<Sphere>(glm::vec3( 0.0, -100.5, -1.0), 100.0, material_ground));
     scene.addObject(std::make_shared<Sphere>(glm::vec3( 0.0,    0.0, -1.0),   0.5, material_center));
     scene.addObject(std::make_shared<Sphere>(glm::vec3(-1.0,    0.0, -1.0),   0.5, material_left));
@@ -28,6 +33,5 @@ int main(int, char**) {
 
 	delete window;
 
-	return 0;
-
+    EXPECT_TRUE(true);
 }
