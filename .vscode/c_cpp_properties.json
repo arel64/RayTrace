@@ -6,6 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/include/h",
+                "D:/Dev/Workspace/RayTrace/build/_deps/googletest-src/googletestinclude",
                 "D:\\Dev\\Dep\\vcpkg\\packages\\glm_x86-windows\\include"
             ],
             "defines": [
