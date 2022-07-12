@@ -7,6 +7,9 @@
 #include <stdint.h>
 #include <thread>
 #include <atomic>
+#include <mutex>
+
+using namespace std::chrono_literals;
 
 TEST(testSafeQueue, basicIO) {
     uint16_t capacity = 1000;
@@ -31,13 +34,12 @@ TEST(testSafeQueue, threadedIO) {
     
     std::atomic<bool> killEnqueue(false);
     std::atomic<bool> killDequeue(false);
-    std::atomic<bool> killTimeout(false);
+    std::mutex timeoutMtx;
+    std::condition_variable wakeVar;
 
-   
-    auto testQueueTime  = std::chrono::seconds(2);
-    int secondsTimeout = 4;
-    auto testTimeoutSec  = std::chrono::seconds(secondsTimeout);
-    ASSERT_TRUE(testTimeoutSec>testQueueTime);
+    auto testQueueTime  =2000ms;
+    auto testTimeoutSec  = 2100ms;
+
 
     SafeQueue<PixelCluster>* queue= new SafeQueue<PixelCluster>(capacity);
     auto a = PixelCluster(1,2,200,120,nullptr);
@@ -45,17 +47,14 @@ TEST(testSafeQueue, threadedIO) {
     
 
     //Start TestTimeout
-    std::thread timeoutThread([&killTimeout,testTimeoutSec,secondsTimeout](){
-        int count = 0;
-        while(!killTimeout){
-            count +=10;
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            if(count > secondsTimeout*1000){
-                EXPECT_TRUE(false);
-                break;
-            }
-        }
+    std::thread timeoutThread([&testTimeoutSec,&timeoutMtx,&wakeVar](){
 
+        std::unique_lock<std::mutex>lock(timeoutMtx);
+        auto now = std::chrono::system_clock::now();
+        if(wakeVar.wait_until(lock,now + testTimeoutSec)==std::cv_status::timeout){
+            //Timeout :(
+            ASSERT_TRUE(false);
+        }
     });
     
 
@@ -79,7 +78,7 @@ TEST(testSafeQueue, threadedIO) {
 
     //Stop threads
     killDequeue = true;
-    killTimeout = true;
+    wakeVar.notify_all();
     removerThread.join();
     timeoutThread.join();
 
