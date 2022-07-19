@@ -1,11 +1,12 @@
 
 #include <h/Render/Render.hpp>
+#include <stdint.h>
 #define FUNNY_MODE true
 inline double getRealRand();
 
-Render::Render(Scene& scene,uint16_t sampleSize,uint16_t antiAliasingSample,
+Render::Render(Scene& scene,uint16_t renderHeight,float ratio,uint16_t sampleSize,uint16_t antiAliasingSample,
     uint16_t maxReflections, uint16_t threadNum):
-        m_sampleSize(sampleSize),m_scene(scene),m_camera(Camera(scene.getRatio())),
+        m_scene(scene),m_height(renderHeight),m_ratio(ratio),m_sampleSize(sampleSize),
         m_maxReflections(maxReflections),m_antiAliasingSample(antiAliasingSample),m_threadNum(threadNum)
 {
     m_tpool = new std::thread[threadNum];
@@ -18,8 +19,8 @@ void Render::startRender(sf::VertexArray* pixels,const Scene& scene){
     std::clog <<  "Render start" << std::endl;
 
 
-    uint16_t sceneHeight = m_scene.getHeight();
-    uint16_t sceneWidth = m_scene.getWidth();
+    uint16_t sceneHeight    =   m_height;
+    uint16_t sceneWidth     =   m_height*getRatio();
     
     
    
@@ -110,10 +111,9 @@ void Render::colorRay(Ray &ray,const Scene& scene,RandomReal& generator){
     ray.m_color = (Color(1.0, 1.0, 1.0)*(1.0-t) +Color(0.5, 0.7, 1.0)* t)*ray.m_color;
 }
 void Render::renderQueueElements(SafeQueue<PixelCluster>* renderQueue,const Scene scene){
-    //Scene Camera
-    Camera c(scene.getRatio());
-    uint16_t sceneHeight = m_scene.getHeight();
-    uint16_t sceneWidth = m_scene.getWidth();
+
+    uint16_t sceneHeight    =   m_height;
+    uint16_t sceneWidth     =   m_height*getRatio();
 
     //AA 
     uint16_t antiAliasingSample = getAntiAliasingSample();
@@ -141,7 +141,7 @@ void Render::renderQueueElements(SafeQueue<PixelCluster>* renderQueue,const Scen
                     float yCoef = (float)(j+ generator.generateRandReal())/sceneHeight; 
 
                     Ray currentPixelRay(m_maxReflections);
-                    c.getCameraRay(xCoef,yCoef, currentPixelRay);
+                    scene.getCamera().getCameraRay(xCoef,yCoef, currentPixelRay);
                     colorRay(currentPixelRay,scene,generator);
                     
                     accumulateR += currentPixelRay.m_color.r;

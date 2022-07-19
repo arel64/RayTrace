@@ -5,12 +5,15 @@
 #include <h/Ray.hpp>
 class Camera{
     public:
-        Camera(float ratio);
-        void getCameraRay(float,float, Ray &);
+        Camera(const float& ratio,const float& fov);
+        Camera(Camera& c):Camera(c.m_viewPortRatio,c.m_fovRad){};
+        void getCameraRay(float,float, Ray &) const;
     public:
-        glm::vec3 m_viewPortHeight;
-        glm::vec3 m_viewPortWidth;
-        glm::vec3 m_focalLength;
+        float m_viewPortRatio;
+        float m_fovRad;
+        glm::vec3 m_viewPortHeightVec;
+        glm::vec3 m_viewPortWidthVec;
+        glm::vec3 m_focalLengthVec;
         glm::vec3 m_origin;
         glm::vec3 m_bottomLeft;
 };

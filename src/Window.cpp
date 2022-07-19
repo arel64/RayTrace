@@ -3,15 +3,10 @@
 #ifdef WIN32
     #include <Windows.h>
 #endif
-Window::Window(uint16_t width,uint16_t height){
-	m_scrHeight = height;
-	m_scrWidth  = width;
-}
-
 void Window::openWindow(Render render){
 	// Create the main window
     sf::RenderWindow window(sf::VideoMode(m_scrWidth,m_scrHeight), "Ray Trace",sf::Style::None);
-    sf::VertexArray scenePixels(sf::Points,render.getScene().getSize());
+    sf::VertexArray scenePixels(sf::Points,m_scrHeight*m_scrWidth);
     // Clear screen
     window.clear();
 

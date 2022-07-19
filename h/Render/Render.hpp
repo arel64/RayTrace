@@ -10,12 +10,14 @@
 #include <h/Materials/Diffuse.hpp>
 #include <chrono>
 #include <iostream>
+#include <stdint.h>
 #include <thread>
 
 class Render{
 
     public:
-        Render(Scene& scene,uint16_t sample =32,uint16_t antiAliasingSample = 16,uint16_t maxReflections = 50,uint16_t threadNum = std::thread::hardware_concurrency());
+        Render(Scene& scene,uint16_t height, float ratio,
+            uint16_t sample =32,uint16_t antiAliasingSample = 16,uint16_t maxReflections = 50,uint16_t threadNum = std::thread::hardware_concurrency());
         
         void        startRender(sf::VertexArray*,const Scene&);
         void        colorRay(Ray&, const Scene& ,RandomReal&);
@@ -24,12 +26,16 @@ class Render{
 
         uint16_t    getAntiAliasingSample()const{return m_antiAliasingSample;};
         uint16_t    getMaxReflections(){return m_maxReflections;};
+        uint16_t    getRenderHeight(){return m_height;}
+        float       getRatio(){return m_ratio;};
+        
         Scene&      getScene(){return m_scene;};
     
     private:
-
+        uint16_t        m_height;
+        float           m_ratio;
+           
         Scene&          m_scene;
-        Camera          m_camera;
         
         std::thread*    m_tpool;
         uint16_t        m_threadNum;
